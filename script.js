@@ -1,138 +1,125 @@
-// ========================================
-// BACKEND API URL
-// ========================================
+// ==========================================
+// API URL
+// ==========================================
 
 const API = "https://day-19-task-manager-backend.onrender.com/tasks";
 
-
-// ========================================
-// SHOW MESSAGE
-// ========================================
-
-function showMessage(message, isError = false) {
-    const messageElement = document.getElementById("message");
-
-    messageElement.innerText = message;
-
-    if (isError) {
-        messageElement.style.color = "red";
-    } else {
-        messageElement.style.color = "green";
-    }
-
-    setTimeout(() => {
-        messageElement.innerText = "";
-    }, 3000);
-}
+// Current logged-in user
+const USER_ID = "6a7da44958d3f261a42e88d1";
 
 
-// ========================================
+// ==========================================
 // LOAD ALL TASKS
-// ========================================
+// ==========================================
 
 async function loadTasks() {
     try {
-
-        const response = await axios.get(API);
-
+        const response = await axios.get(`${API}?userId=${USER_ID}`);
         const tasks = response.data;
 
-        const taskList = document.getElementById("taskList");
+        const list = document.getElementById("taskList");
 
-        taskList.innerHTML = "";
+        list.innerHTML = "";
 
         if (tasks.length === 0) {
-            taskList.innerHTML = "<p>No tasks yet. Add your first task! 🎯</p>";
+            list.innerHTML = "<p>No tasks yet. Add your first task!</p>";
             return;
         }
 
         tasks.forEach(task => {
 
-            const li = document.createElement("li");
+            const div = document.createElement("div");
+            div.className = "task";
 
-            li.className = "task";
+            div.innerHTML = `
+                <div class="task-info">
 
-            li.innerHTML = `
-                <span class="task-title ${task.completed ? "completed" : ""}">
-                    ${task.title}
-                </span>
+                    <div class="task-title ${task.completed ? "completed" : ""}">
+                        ${task.title}
+                    </div>
 
-                <button
-                    class="complete-btn"
-                    onclick="toggleTask('${task._id}', ${!task.completed})">
-                    ${task.completed ? "Undo" : "Complete"}
-                </button>
+                    <span class="category">
+                        ${task.category || "Personal"}
+                    </span>
 
-                <button
-                    class="edit-btn"
-                    onclick="editTask('${task._id}', '${escapeQuotes(task.title)}')">
-                    Edit
-                </button>
+                </div>
 
-                <button
-                    class="delete-btn"
-                    onclick="deleteTask('${task._id}')">
-                    Delete
-                </button>
+                <div class="buttons">
+
+                    <button
+                        class="complete-btn"
+                        onclick="toggleTask('${task._id}', ${!task.completed})">
+                        ${task.completed ? "Undo" : "Complete"}
+                    </button>
+
+                    <button
+                        class="edit-btn"
+                        onclick="editTask('${task._id}', '${escapeQuotes(task.title)}')">
+                        Edit
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteTask('${task._id}')">
+                        Delete
+                    </button>
+
+                </div>
             `;
 
-            taskList.appendChild(li);
+            list.appendChild(div);
         });
 
     } catch (error) {
-
-        console.error("Load tasks error:", error);
-
-        showMessage(
-            "Could not connect to backend",
-            true
-        );
+        console.error("Error loading tasks:", error);
+        alert("Could not load tasks.");
     }
 }
 
 
-// ========================================
+// ==========================================
 // ADD TASK
-// ========================================
+// ==========================================
 
 async function addTask() {
 
     const input = document.getElementById("taskInput");
+    const category = document.getElementById("categorySelect");
 
     const title = input.value.trim();
+    const selectedCategory = category.value;
 
     if (!title) {
-        showMessage("Please enter a task", true);
+        alert("Please enter a task.");
         return;
     }
 
     try {
 
         await axios.post(API, {
-            title: title
+            title: title,
+            category: selectedCategory,
+            userId: USER_ID
         });
 
         input.value = "";
 
-        showMessage("Task added successfully! ✅");
+        category.value = "Personal";
 
-        loadTasks();
+        await loadTasks();
 
     } catch (error) {
 
-        console.error("Add task error:", error);
+        console.error("Error adding task:", error);
 
-        showMessage(
-            "Failed to add task",
-            true
-        );
+        alert("Could not add task.");
     }
 }
 
 
-// ========================================
+// ==========================================
 // COMPLETE / UNDO TASK
-// ========================================
+// ==========================================
 
 async function toggleTask(id, completed) {
 
@@ -142,71 +129,56 @@ async function toggleTask(id, completed) {
             completed: completed
         });
 
-        loadTasks();
+        await loadTasks();
 
     } catch (error) {
 
-        console.error("Toggle task error:", error);
+        console.error("Error updating task:", error);
 
-        showMessage(
-            "Failed to update task",
-            true
-        );
+        alert("Could not update task.");
     }
 }
 
 
-// ========================================
+// ==========================================
 // EDIT TASK
-// ========================================
+// ==========================================
 
 async function editTask(id, oldTitle) {
 
-    const newTitle = prompt(
-        "Edit your task:",
-        oldTitle
-    );
+    const newTitle = prompt("Edit your task:", oldTitle);
 
     if (newTitle === null) {
         return;
     }
 
-    const title = newTitle.trim();
+    const trimmedTitle = newTitle.trim();
 
-    if (!title) {
-        showMessage(
-            "Task title cannot be empty",
-            true
-        );
-
+    if (!trimmedTitle) {
+        alert("Task cannot be empty.");
         return;
     }
 
     try {
 
         await axios.put(`${API}/${id}`, {
-            title: title
+            title: trimmedTitle
         });
 
-        showMessage("Task updated successfully! ✏️");
-
-        loadTasks();
+        await loadTasks();
 
     } catch (error) {
 
-        console.error("Edit task error:", error);
+        console.error("Error editing task:", error);
 
-        showMessage(
-            "Failed to edit task",
-            true
-        );
+        alert("Could not edit task.");
     }
 }
 
 
-// ========================================
+// ==========================================
 // DELETE TASK
-// ========================================
+// ==========================================
 
 async function deleteTask(id) {
 
@@ -222,25 +194,20 @@ async function deleteTask(id) {
 
         await axios.delete(`${API}/${id}`);
 
-        showMessage("Task deleted successfully! 🗑️");
-
-        loadTasks();
+        await loadTasks();
 
     } catch (error) {
 
-        console.error("Delete task error:", error);
+        console.error("Error deleting task:", error);
 
-        showMessage(
-            "Failed to delete task",
-            true
-        );
+        alert("Could not delete task.");
     }
 }
 
 
-// ========================================
+// ==========================================
 // ESCAPE QUOTES FOR EDIT BUTTON
-// ========================================
+// ==========================================
 
 function escapeQuotes(text) {
 
@@ -251,23 +218,8 @@ function escapeQuotes(text) {
 }
 
 
-// ========================================
-// ENTER KEY SUPPORT
-// ========================================
-
-document
-    .getElementById("taskInput")
-    .addEventListener("keypress", function(event) {
-
-        if (event.key === "Enter") {
-            addTask();
-        }
-
-    });
-
-
-// ========================================
-// INITIAL LOAD
-// ========================================
+// ==========================================
+// LOAD TASKS WHEN PAGE OPENS
+// ==========================================
 
 loadTasks();

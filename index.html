@@ -6,25 +6,23 @@
 
     <title>Task Manager</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <style>
         body {
             font-family: Arial, sans-serif;
             background: #f4f4f4;
             margin: 0;
-            padding: 40px 20px;
+            padding: 30px;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: auto;
             background: white;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
@@ -32,7 +30,7 @@
             margin-bottom: 30px;
         }
 
-        .input-section {
+        .input-area {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
@@ -40,44 +38,51 @@
 
         #taskInput {
             flex: 1;
-            padding: 12px;
+            padding: 15px;
             font-size: 16px;
             border: 1px solid #ccc;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
-        button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
+        #categorySelect {
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
         }
 
         .add-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
             background: #222;
             color: white;
+            cursor: pointer;
+            font-size: 16px;
         }
 
-        .task-list {
-            list-style: none;
-            padding: 0;
+        .add-btn:hover {
+            background: #444;
         }
 
         .task {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: #f8f8f8;
-            border-radius: 8px;
+            gap: 15px;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: #f7f7f7;
+            border-radius: 10px;
+        }
+
+        .task-info {
+            flex: 1;
         }
 
         .task-title {
-            flex: 1;
-            font-size: 16px;
+            font-size: 18px;
+            margin-bottom: 8px;
         }
 
         .completed {
@@ -85,35 +90,52 @@
             color: gray;
         }
 
-        .complete-btn {
-            background: #28a745;
-            color: white;
+        .category {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            background: #ddd;
         }
 
-        .delete-btn {
-            background: #dc3545;
+        .buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            border: none;
+            padding: 10px 14px;
+            border-radius: 7px;
+            cursor: pointer;
             color: white;
+            font-size: 14px;
+        }
+
+        .complete-btn {
+            background: #28a745;
         }
 
         .edit-btn {
             background: #007bff;
-            color: white;
         }
 
-        #message {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: bold;
+        .delete-btn {
+            background: #dc3545;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
+            .input-area {
+                flex-direction: column;
+            }
+
             .task {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .input-section {
-                flex-direction: column;
+            .buttons {
+                justify-content: center;
             }
         }
     </style>
@@ -121,31 +143,35 @@
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <h1>📝 Task Manager</h1>
+        <h1>📝 Task Manager</h1>
 
-    <div id="message"></div>
+        <div class="input-area">
 
-    <div class="input-section">
-        <input
-            type="text"
-            id="taskInput"
-            placeholder="Enter a new task..."
-        >
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter a new task..."
+            >
 
-        <button class="add-btn" onclick="addTask()">
-            Add Task
-        </button>
+            <select id="categorySelect">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Urgent">Urgent</option>
+            </select>
+
+            <button class="add-btn" onclick="addTask()">
+                Add Task
+            </button>
+
+        </div>
+
+        <div id="taskList"></div>
+
     </div>
 
-    <ul id="taskList" class="task-list"></ul>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
