@@ -1,144 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Task Manager</title>
+    <title>Task Manager - Login</title>
 
+    <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             margin: 0;
-            padding: 30px;
+            min-height: 100vh;
+            padding: 40px 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: auto;
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            font-size: 42px;
+            margin-bottom: 40px;
         }
 
-        .input-area {
-            display: flex;
-            gap: 10px;
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 30px;
             margin-bottom: 25px;
         }
 
-        #taskInput {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
+        h2 {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        #categorySelect {
-            padding: 15px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        .add-btn {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            background: #222;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .add-btn:hover {
-            background: #444;
-        }
-
-        .task {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 18px;
-            margin-bottom: 12px;
-            background: #f7f7f7;
             border-radius: 10px;
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-title {
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .completed {
-            text-decoration: line-through;
-            color: gray;
-        }
-
-        .category {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 13px;
-            background: #ddd;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 8px;
+            font-size: 16px;
         }
 
         button {
+            width: 100%;
+            padding: 16px;
             border: none;
-            padding: 10px 14px;
-            border-radius: 7px;
-            cursor: pointer;
+            border-radius: 10px;
+            background: #222;
             color: white;
-            font-size: 14px;
+            font-size: 17px;
+            cursor: pointer;
         }
 
-        .complete-btn {
-            background: #28a745;
+        button:hover {
+            background: #444;
         }
 
-        .edit-btn {
-            background: #007bff;
+        .divider {
+            text-align: center;
+            font-size: 22px;
+            color: #777;
+            margin: 25px 0;
         }
 
-        .delete-btn {
-            background: #dc3545;
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
         }
 
-        @media (max-width: 700px) {
-            .input-area {
-                flex-direction: column;
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 10px;
             }
 
-            .task {
-                flex-direction: column;
-                align-items: stretch;
+            .container {
+                padding: 20px;
             }
 
-            .buttons {
-                justify-content: center;
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 25px;
             }
         }
+
     </style>
+
 </head>
 
 <body>
@@ -147,31 +118,83 @@
 
         <h1>📝 Task Manager</h1>
 
-        <div class="input-area">
+
+        <!-- ========================= -->
+        <!-- LOGIN -->
+        <!-- ========================= -->
+
+        <div class="card">
+
+            <h2>🔐 Login</h2>
 
             <input
-                type="text"
-                id="taskInput"
-                placeholder="Enter a new task..."
+                type="email"
+                id="loginEmail"
+                placeholder="Enter your email"
             >
 
-            <select id="categorySelect">
-                <option value="Personal">Personal</option>
-                <option value="Work">Work</option>
-                <option value="Urgent">Urgent</option>
-            </select>
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter your password"
+            >
 
-            <button class="add-btn" onclick="addTask()">
-                Add Task
+            <button onclick="login()">
+                Login
             </button>
+
+            <div id="loginMessage" class="message"></div>
 
         </div>
 
-        <div id="taskList"></div>
+
+        <div class="divider">
+            ───────── OR ─────────
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- CREATE ACCOUNT -->
+        <!-- ========================= -->
+
+        <div class="card">
+
+            <h2>📝 Create Account</h2>
+
+            <input
+                type="text"
+                id="signupName"
+                placeholder="Enter your name"
+            >
+
+            <input
+                type="email"
+                id="signupEmail"
+                placeholder="Enter your email"
+            >
+
+            <input
+                type="password"
+                id="signupPassword"
+                placeholder="Enter your password"
+            >
+
+            <button onclick="createAccount()">
+                Create Account
+            </button>
+
+            <div id="signupMessage" class="message"></div>
+
+        </div>
 
     </div>
+
+
+    <!-- IMPORTANT -->
+    <!-- JavaScript must be loaded AFTER the HTML -->
 
     <script src="script.js"></script>
 
 </body>
+
 </html>
